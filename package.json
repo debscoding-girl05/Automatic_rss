@@ -1,0 +1,23 @@
+{
+  "name": "auto_rss",
+  "version": "1.0.0",
+  "description": "automatic analysing of flux rss categorized in notion by gemini and sending in email",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gemini",
+    "rss",
+    "auto_rss"
+  ],
+  "author": "debs",
+  "license": "ISC",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@notionhq/client": "^2.2.15",
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
+    "nodemailer": "^6.9.16"
+  }
+}
