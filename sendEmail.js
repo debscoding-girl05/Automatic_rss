@@ -21,7 +21,7 @@ const sendEmail = async (filePath, articles) => {
 
   const mailOptions = {
     from: process.env.SMTP_USER,
-    to: "recipient@example.com", // Replace with the recipient's email
+    to: "dtakouessa@gmail.com", // Replace with the recipient's email
     subject: "Daily Synthesized Articles",
     html: `<p>Here are the articles:</p>${links}`,
     attachments: [{ path: filePath }],
