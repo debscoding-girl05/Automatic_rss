@@ -1,30 +1,44 @@
-require ('dotenv').config();
-const {fetchArticlesFromNotion} = require('./fetchArticles');
-const {synthesizeArticlesWithGemini } = require('./aiSynthesis');
-const {createTextFile} = require('./createTxt');
-const {sendEmail} = require('./sendEmail');
+const { fetchArticlesFromNotion } = require("./fetchArticles");
+const { synthesizeArticlesWithGemini } = require("./aiSynthesis");
+const { generatePDF } = require("./generatePDF");
+const { sendEmail } = require("./sendEmail");
+require("dotenv").config();
+
 
 (async () => {
   try {
-    console.log("Fetching articles from Notion...");
+    // Debugging the environment variables and API key
+    console.log(
+      "DEBUG: Checking NOTION_API_KEY from environment:",
+      process.env.NOTION_API_KEY
+    );
+
+    // Fetch articles from Notion
+    console.log("DEBUG: Fetching articles from Notion...");
     const articles = await fetchArticlesFromNotion();
+    console.log("DEBUG: Articles fetched from Notion:", articles);
 
-    if (articles.length === 0) {
-      console.log("No articles to process.");
-      return;
-    }
+    // Debugging the content to be sent to Gemini for synthesis
+    console.log("DEBUG: Sending articles to Gemini for synthesis...");
+    const { summary, report } = await synthesizeArticlesWithGemini(articles);
+    console.log("DEBUG: Synthesized summary:", summary);
+    console.log("DEBUG: Generated report:", report);
 
-    console.log("Synthesizing articles with Gemini...");
-    const synthesis = await synthesizeArticlesWithGemini(articles);
+    // Generate PDF from report
+    console.log("DEBUG: Generating PDF from the report...");
+    const pdfPath = await generatePDF(report);
+    console.log("DEBUG: PDF generated at path:", pdfPath);
 
-    console.log("Creating text file...");
-    const filePath = createTextFile(synthesis);
+    // Define recipients' emails
+    const recipients = "dtakouessa@gmail.com,bostel57@gmail.com";
+    console.log("DEBUG: Sending email to recipients:", recipients);
 
-    console.log("Sending email...");
-    await sendEmail(filePath, articles);
-
-    console.log("Workflow completed successfully!");
+    // Send the email with the synthesized summary and PDF
+    await sendEmail(pdfPath, summary, articles, recipients);
+    console.log("DEBUG: Email sent successfully!");
   } catch (error) {
-    console.error("Workflow failed:", error.message);
+    console.error("Error in main process:", error.message);
+    // Log detailed error to help with debugging
+    console.error("Full error details:", error);
   }
 })();

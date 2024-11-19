@@ -1,4 +1,5 @@
 const { Client } = require("@notionhq/client");
+require("dotenv").config();
 
 // Initialize Notion client
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
@@ -9,30 +10,23 @@ const notion = new Client({ auth: process.env.NOTION_API_KEY });
  */
 const fetchArticlesFromNotion = async () => {
   try {
-    // Query the Notion database
     const response = await notion.databases.query({
       database_id: process.env.NOTION_DATABASE_ID,
     });
 
-    // Map through the response and format the articles
     return response.results.map((page) => {
       const titleProperty = page.properties.Name?.title || [];
       const urlProperty = page.properties.URL?.url;
       const summaryProperty = page.properties.Summary?.rich_text || [];
 
       return {
-        title: titleProperty[0]?.text?.content || "Untitled", // Extract title
-        url: urlProperty || "No URL", // Extract URL
-        summary: summaryProperty[0]?.text?.content || "No Summary", // Extract summary
+        title: titleProperty[0]?.text?.content || "Untitled",
+        url: urlProperty || "No URL",
+        summary: summaryProperty[0]?.text?.content || "No Summary",
       };
     });
   } catch (error) {
-    // Log detailed error information
-    console.error("Error fetching articles from Notion:");
-    console.error(error.message);
-    console.error("Details:", error);
-
-    // Re-throw the error for upstream handling
+    console.error("Error fetching articles from Notion:", error.message);
     throw error;
   }
 };
